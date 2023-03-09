@@ -29,10 +29,11 @@ class QRCodeController extends Controller
         Storage::putFileAs('public/programmes', $file, $file_name);
 
         $qrcode = QrCode::format('png')
-                ->merge(public_path('storage/sbs_logo.png'), 0.2, true)
-                ->eyeColor(0, 52, 71, 130, 151, 126, 61)
-                ->eyeColor(1, 52, 71, 130, 231, 0, 0)
-                ->eyeColor(2, 231, 0, 0, 52, 71, 130)
+                ->merge(public_path('storage/sbs_logo.jpg'), 0.3, true)
+                ->errorCorrection('H')
+                ->eyeColor(0, 0, 32, 91, 151, 126, 61)
+                ->eyeColor(1, 0, 32, 91, 148, 52, 58)
+                ->eyeColor(2, 148, 52, 58, 0, 32, 91,)
                 ->size(600)
                 ->margin(3)
                 ->generate(route('get_qrcode',['file_name'=>$file_name]));
@@ -81,8 +82,6 @@ class QRCodeController extends Controller
         }catch (Exception $e){
             return response($e->getMessage());
         }
-
         return response()->download(storage_path($docName));
-
     }
 }
