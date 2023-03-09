@@ -37,6 +37,11 @@ class QRCodeController extends Controller
                 ->margin(3)
                 ->generate(route('get_qrcode',['file_name'=>$file_name]));
 
+        if($request->submit == 'image'){
+            Storage::put('public/qrcodes/'.$qrcode_name, $qrcode);
+            return response()->download(public_path()."\storage\qrcodes\\".$qrcode_name);
+        }
+
         $phpWord = new PhpWord();
 
         $section = $phpWord->addSection();
@@ -66,8 +71,8 @@ class QRCodeController extends Controller
 
         $section->addText($hook, $hookStyles);
         $section->addImage($qrcode, $imageStyles);
-        $section->addText($description1);
-        $section->addText($description2);
+        $section->addText($description1, $textStyles);
+        $section->addText($description2, $textStyles);
 
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
         $docName = $request->name.'_'.$request->venue.'_'.$request->date.'.docx';
@@ -79,64 +84,5 @@ class QRCodeController extends Controller
 
         return response()->download(storage_path($docName));
 
-
-////        Storage::put('public/qrcodes/'.$qrcode_name, $qrcode);
-//        Session::put('event_name', $request->name);
-//        Session::put('event_venue', $request->venue);
-//        Session::put('event_date', $request->date);
-//        Session::put('event_start_time', $request->start_time);
-//        Session::put('event_end_time', $request->end_time);
-//        return view('download')->with(['qrcode_name'=> $qrcode_name]);
-    }
-
-    public function download($qrcode_name){
-        $event_name = Session::get('event_name');
-        $event_venue = Session::get('event_venue');
-        $event_date = Session::get('event_date');
-        $event_start_time = Session::get('event_start_time');
-        $event_end_time = Session::get('event_end_time');
-
-        $phpWord = new PhpWord();
-
-        $section = $phpWord->addSection();
-        $hook = $event_name;
-        $description1 = $event_venue;
-        $description2 = $event_date.', '.$event_start_time.' - '.$event_end_time;
-
-        $imageStyles = array(
-            'width' => 500,
-            'height' => 500,
-        );
-
-        $hookStyles = array(
-            'size' => 35,
-            'bold' => true,
-            'allCaps' => true,
-            'color' => '#00205B',
-            'spaceBefore' => Converter::pointToTwip(40),
-        );
-
-        $textStyles = array(
-            'size' => 20,
-            'bold' => true,
-            'allCaps' => true,
-            'spaceBefore' => Converter::pointToTwip(40)
-        );
-
-        $section->addText($hook, $hookStyles);
-        $section->addImage(public_path()."\storage\qrcodes\\".$qrcode_name, $imageStyles);
-        $section->addText($description1);
-        $section->addText($description2);
-
-        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-        $docName = $event_name.'_'.$event_venue.'_'.$event_date.'.docx';
-        try{
-            $objWriter->save(storage_path($docName));
-        }catch (Exception $e){
-            return response($e->getMessage());
-        }
-
-        return response()->download(storage_path($docName));
-        dd($qrcode_name);
     }
 }

@@ -43,7 +43,8 @@
                         <input name="program" type="file" accept=".pdf" required>
                     </div>
                     <div class="">
-                        <button type="submit">Generate</button>
+                        <button type="submit" name="submit" value="image">Generate Image</button>
+                        <button type="submit" name="submit" value="document">Generate Document</button>
                     </div>
                 </form>
 {{--                {!! QrCode::size(300)->generate('https://5fe3-2c0f-fe38-2248-4316-f868-cb1d-6100-9fd.in.ngrok.io/qrcode') !!}--}}
